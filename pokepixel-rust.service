@@ -1,0 +1,18 @@
+[Unit]
+Description=PokePixel Autonomous Bot (Native Rust Zero-GC Engine)
+After=network.target
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory=/home/ubuntu
+ExecStart=/home/ubuntu/bot-pokepixel-rust
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+Environment=RUST_LOG=info
+Environment=PORT=3015
+
+[Install]
+WantedBy=multi-user.target
