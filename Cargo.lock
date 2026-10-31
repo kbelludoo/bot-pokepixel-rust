@@ -64,6 +64,7 @@ dependencies = [
  "futures-util",
  "hex",
  "hmac",
+ "rand 0.8.8",
  "reqwest",
  "serde",
  "serde_json",

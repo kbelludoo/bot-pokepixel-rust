@@ -325,11 +325,12 @@ impl PokePixelBot {
             }
         });
 
-        // Loop de Caça (a cada 5s)
+        // Loop de Caça com Jitter Orgânico (4.0s - 6.0s)
         let bot_hunt = self.clone();
         tokio::spawn(async move {
             loop {
-                tokio::time::sleep(Duration::from_secs(5)).await;
+                let jitter = 0.8 + rand::random::<f64>() * 0.4;
+                tokio::time::sleep(Duration::from_secs_f64(5.0 * jitter)).await;
                 if !bot_hunt.config.settings.auto_hunt {
                     continue;
                 }
@@ -345,11 +346,12 @@ impl PokePixelBot {
             }
         });
 
-        // Loop de Saúde (a cada 10s)
+        // Loop de Saúde (a cada 8s - 12s com jitter)
         let bot_heal = self.clone();
         tokio::spawn(async move {
             loop {
-                tokio::time::sleep(Duration::from_secs(10)).await;
+                let jitter = 0.8 + rand::random::<f64>() * 0.4;
+                tokio::time::sleep(Duration::from_secs_f64(10.0 * jitter)).await;
                 if !bot_heal.config.settings.auto_heal {
                     continue;
                 }
@@ -375,23 +377,31 @@ impl PokePixelBot {
             }
         });
 
-        // Loop de Recompensas Diárias e Stamina (a cada 15 min)
+        // Loop de Recompensas Diárias e Stamina (com jitter e pacing humano anti-burst)
         let bot_daily = self.clone();
         tokio::spawn(async move {
             loop {
-                tokio::time::sleep(Duration::from_secs(900)).await;
+                let jitter = 0.85 + rand::random::<f64>() * 0.3;
+                tokio::time::sleep(Duration::from_secs_f64(900.0 * jitter)).await;
                 if bot_daily.config.settings.auto_daily {
-                    bot_daily.add_log("🎁 Coletando recompensas diárias, missões e stamina...".to_string()).await;
+                    bot_daily.add_log("🎁 Coletando recompensas diárias, missões e stamina com pacing humano...".to_string()).await;
                     let _ = bot_daily.client.claim_daily_login().await;
+                    tokio::time::sleep(Duration::from_millis(300 + (rand::random::<u64>() % 300))).await;
                     let _ = bot_daily.client.claim_all_quests().await;
+                    tokio::time::sleep(Duration::from_millis(300 + (rand::random::<u64>() % 300))).await;
                     let _ = bot_daily.client.claim_all_battlepass().await;
+                    tokio::time::sleep(Duration::from_millis(300 + (rand::random::<u64>() % 300))).await;
                     let _ = bot_daily.client.claim_all_species_goals().await;
+                    tokio::time::sleep(Duration::from_millis(300 + (rand::random::<u64>() % 300))).await;
                     let _ = bot_daily.client.claim_all_mail().await;
+                    tokio::time::sleep(Duration::from_millis(300 + (rand::random::<u64>() % 300))).await;
                     let _ = bot_daily.client.resolve_stamina().await;
                 }
 
                 if bot_daily.config.settings.auto_professions {
+                    tokio::time::sleep(Duration::from_millis(400 + (rand::random::<u64>() % 300))).await;
                     let _ = bot_daily.client.collect_mining_rewards(0).await;
+                    tokio::time::sleep(Duration::from_millis(400 + (rand::random::<u64>() % 300))).await;
                     let _ = bot_daily.client.collect_farm_rewards(0).await;
                 }
             }
